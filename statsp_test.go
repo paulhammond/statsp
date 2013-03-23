@@ -19,7 +19,7 @@ func TestMetricTypeString(t *testing.T) {
 
 	s = Guage.String()
 	if s != "g" {
-		t.Errorf("expected guage string to be 'g', got '%s'", s)
+		t.Errorf("expected gauge string to be 'g', got '%s'", s)
 	}
 
 	s = Histogram.String()

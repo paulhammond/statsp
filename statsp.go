@@ -1,4 +1,4 @@
-package gostatsd
+package statsp
 
 import (
 	"strconv"

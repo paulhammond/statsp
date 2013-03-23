@@ -33,6 +33,14 @@ func TestParse(t *testing.T) {
 			Metric{"uniques", Set, 765.0, 0},
 		}},
 
+		// trailing newlines
+		{"gorets:1|c\n", []Metric{
+			Metric{"gorets", Counter, 1.0, 0},
+		}},
+		{"gorets:1|c\n\n\n", []Metric{
+			Metric{"gorets", Counter, 1.0, 0},
+		}},
+
 		// based on github.com/b/statsd_spec
 		{"glork:320|h", []Metric{
 			Metric{"glork", Histogram, 320.0, 0},
@@ -83,6 +91,7 @@ func TestParseErrors(t *testing.T) {
 		{"missing :", "gorets1|c", "Invalid statsd packet"},
 		{"unknown type", "glork:320|q", "Invalid statsd packet"},
 		{"sample rate on non-counter", "gorets:1|g|@0.1", "Invalid statsd packet"},
+		{"blank line", "gorets:1|c\n\ngorets:1|c", "Invalid statsd packet"},
 	}
 	for i, tst := range tests {
 		b := []byte(tst.in)

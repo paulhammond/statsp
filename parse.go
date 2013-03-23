@@ -10,7 +10,7 @@ import (
 var nl = []byte{0x0A}
 
 func Parse(b []byte) (metrics *[]Metric, e error) {
-	split := bytes.Split(b, nl)
+	split := bytes.Split(bytes.Trim(b, "\n"), nl)
 	r := make([]Metric, len(split))
 	re := regexp.MustCompile("^([^:]+):(\\-?[0-9\\..]+)\\|(c|ms|g|h|s)(?:\\|@([0-9\\.]+))?")
 	m := Metric{}

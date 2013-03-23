@@ -7,6 +7,7 @@ import (
 type Metric struct {
 	Name       string
 	Type       MetricType
+	Relative   bool
 	Value      float64
 	SampleRate float64
 }

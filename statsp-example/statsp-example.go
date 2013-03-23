@@ -11,10 +11,12 @@ import (
 
 func main() {
 	c := make(chan statsp.Metric)
+	cleaner := statsp.NewCleaner()
 	go statsp.Listen("127.0.0.1:8125", c)
 
 	for {
 		metric := <-c
-		fmt.Printf("%s %20s %2s %v\n", time.Now().Format(time.RFC3339), metric.Name, metric.Type, metric.Value)
+		cleaned := cleaner.Clean(metric)
+		fmt.Printf("%s %20s %2s %.10f %.10f\n", time.Now().Format(time.RFC3339), metric.Name, metric.Type, metric.Value, cleaned.Value)
 	}
 }

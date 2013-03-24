@@ -27,10 +27,10 @@ The most common usage is to read StatsD data directly from the network; a
 basic server implementation is provided that sends received metrics on a
 channel.
 
-    c := make(chan statsp.Metric)
+    c := make(chan statsp.Packet)
     go statsp.Listen("127.0.0.1:8125", c)
     for {
-      metric := <-c
+      packet := <-c
       // do something with the metric here
     }
 

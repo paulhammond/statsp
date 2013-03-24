@@ -3,11 +3,18 @@ package statsp
 import (
 	"log"
 	"net"
+	"time"
 )
+
+type Packet struct {
+	Metrics *[]Metric
+	Addr    net.Addr
+	Time    time.Time
+}
 
 // Listen creates a UDP server that parses statsd data into metrics and
 // sends them over a channel.
-func Listen(addr string, c chan Metric) {
+func Listen(addr string, c chan Packet) {
 	laddr, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		log.Fatalln("fatal: failed to resolve address", err)
@@ -18,7 +25,8 @@ func Listen(addr string, c chan Metric) {
 	}
 	for {
 		buf := make([]byte, 1452)
-		n, err := conn.Read(buf[:])
+		n, raddr, err := conn.ReadFrom(buf[:])
+		t := time.Now().UTC()
 		if err != nil {
 			log.Println("error: Failed to recieve packet", err)
 		} else {
@@ -27,9 +35,8 @@ func Listen(addr string, c chan Metric) {
 				log.Println("error: Failed to recieve packet", err)
 			}
 			if metrics != nil {
-				for _, p := range *metrics {
-					c <- p
-				}
+				p := Packet{metrics, raddr, t}
+				c <- p
 			}
 		}
 	}

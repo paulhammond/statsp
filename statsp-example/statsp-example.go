@@ -10,13 +10,19 @@ import (
 )
 
 func main() {
-	c := make(chan statsp.Metric)
+	c := make(chan statsp.Packet)
 	cleaner := statsp.NewCleaner()
 	go statsp.Listen("127.0.0.1:8125", c)
 
 	for {
-		metric := <-c
-		cleaned := cleaner.Clean(metric)
-		fmt.Printf("%s %20s %2s %.10f %.10f\n", time.Now().Format(time.RFC3339), metric.Name, metric.Type, metric.Value, cleaned.Value)
+		packet := <-c
+		for i, metric := range *packet.Metrics {
+			cleaned := cleaner.Clean(metric)
+			newpacket := ""
+			if (i == 0) {
+				newpacket = "."
+			}
+			fmt.Printf("%2s %s %20s %2s %.10f %.10f\n", newpacket, packet.Time.Format(time.RFC3339), metric.Name, metric.Type, metric.Value, cleaned.Value)
+		}
 	}
 }

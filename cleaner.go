@@ -21,3 +21,11 @@ func (c Cleaner) Clean(m Metric) Metric {
 	}
 	return m
 }
+
+func (c Cleaner) CleanMetrics(metrics []Metric) []Metric {
+	r := make([]Metric, len(metrics))
+	for i, m := range metrics {
+		r[i] = c.Clean(m)
+	}
+	return r
+}

@@ -1,6 +1,7 @@
 package statsp
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -43,5 +44,27 @@ func TestCleanerOthers(t *testing.T) {
 		if cleaned != expected {
 			t.Errorf("%d: expected %v got %v", i, expected, cleaned)
 		}
+	}
+}
+
+func TestCleanMetrics(t *testing.T) {
+	in := []Metric{
+		Metric{"boo", Counter, true, -1.0, 0},
+		Metric{"foo", Guage, true, 1.0, 0},
+		Metric{"foo", Guage, true, 1.0, 0},
+		Metric{"foo", Guage, true, -1.0, 0},
+		Metric{"foo", Guage, false, 1.0, 0},
+	}
+	expected := []Metric{
+		Metric{"boo", Counter, false, -1.0, 0},
+		Metric{"foo", Guage, false, 1.0, 0},
+		Metric{"foo", Guage, false, 2.0, 0},
+		Metric{"foo", Guage, false, 1.0, 0},
+		Metric{"foo", Guage, false, 1.0, 0},
+	}
+	cleaner := NewCleaner()
+	cleaned := cleaner.CleanMetrics(in)
+	if !reflect.DeepEqual(cleaned, expected) {
+		t.Errorf("expected\n%v\ngot\n%v\n", expected, cleaned)
 	}
 }

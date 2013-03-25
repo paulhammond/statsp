@@ -12,7 +12,7 @@ import (
 func main() {
 	c := make(chan statsp.Packet)
 	cleaner := statsp.NewCleaner()
-	go statsp.Listen("127.0.0.1:8125", c)
+	go statsp.Listen("127.0.0.1:8125", c, false)
 
 	for {
 		packet := <-c

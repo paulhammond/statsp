@@ -14,7 +14,8 @@ type Packet struct {
 
 // Listen creates a UDP server that parses statsd data into metrics and
 // sends them over a channel.
-func Listen(addr string, c chan Packet) {
+func Listen(addr string, c chan Packet, clean bool) {
+	cleaner := NewCleaner()
 	laddr, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
 		log.Fatalln("fatal: failed to resolve address", err)
@@ -35,7 +36,14 @@ func Listen(addr string, c chan Packet) {
 				log.Println("error: Failed to recieve packet", err)
 			}
 			if metrics != nil {
-				p := Packet{metrics, raddr, t}
+				var p Packet
+				if clean {
+					cleaned := cleaner.CleanMetrics(*metrics)
+					p = Packet{&cleaned, raddr, t}
+				} else {
+					p = Packet{metrics, raddr, t}
+				}
+
 				c <- p
 			}
 		}
